@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Resume Search Flowchart</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f1117; font-family: 'Segoe UI', sans-serif; padding: 30px; color: white; }
+  h1 { text-align: center; margin-bottom: 8px; font-size: 24px; color: #fff; }
+  p.sub { text-align: center; color: #888; margin-bottom: 40px; font-size: 14px; }
+
+  .flow { display: flex; gap: 40px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
+
+  .lane { display: flex; flex-direction: column; align-items: center; gap: 0; min-width: 220px; }
+  .lane-title { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 8px 20px; border-radius: 20px; margin-bottom: 20px; }
+
+  .candidate .lane-title { background: #1a3a5c; color: #60a5fa; }
+  .recruiter .lane-title { background: #1a3d2b; color: #34d399; }
+  .admin .lane-title    { background: #3d1a1a; color: #f87171; }
+  .ai .lane-title       { background: #2d1a3d; color: #c084fc; }
+
+  .box {
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    text-align: center;
+    width: 200px;
+    position: relative;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .candidate .box { background: #1e3a5f; border: 1px solid #2563eb; color: #bfdbfe; }
+  .recruiter .box { background: #1a3d2b; border: 1px solid #16a34a; color: #bbf7d0; }
+  .admin .box     { background: #3d1a1a; border: 1px solid #dc2626; color: #fecaca; }
+  .ai .box        { background: #2d1a3d; border: 1px solid #9333ea; color: #e9d5ff; }
+
+  .decision {
+    width: 180px;
+    padding: 14px 12px;
+    font-size: 12px;
+    text-align: center;
+    transform: rotate(0deg);
+    background: #1e293b;
+    border: 2px dashed #64748b;
+    color: #94a3b8;
+    border-radius: 8px;
+    font-style: italic;
+  }
+
+  .arrow {
+    width: 2px;
+    height: 28px;
+    background: #334155;
+    position: relative;
+    margin: 0 auto;
+  }
+  .arrow::after {
+    content: '▼';
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: #1e293b;
+    margin: 40px 0;
+  }
+
+  .shared-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-top: 10px;
+  }
+  .shared-box {
+    background: #1e1e2e;
+    border: 1px solid #4f46e5;
+    border-radius: 12px;
+    padding: 14px 24px;
+    color: #a5b4fc;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 260px;
+  }
+  .shared-label {
+    font-size: 11px;
+    color: #6366f1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .result-box {
+    background: #14532d;
+    border: 1px solid #16a34a;
+    border-radius: 12px;
+    padding: 14px 24px;
+    color: #86efac;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 260px;
+  }
+
+  .legend {
+    display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 40px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<h1>🔍 AI Resume Search — App Flowchart</h1>
+<p class="sub">How data flows through the system for each user role</p>
+
+<div class="flow">
+
+  <!-- CANDIDATE -->
+  <div class="lane candidate">
+    <div class="lane-title">👤 Candidate</div>
+
+    <div class="box">Upload Resume<br><small>(PDF or TXT)</small></div>
+    <div class="arrow"></div>
+    <div class="box">Extract Text<br><small>PyPDF2 / decode</small></div>
+    <div class="arrow"></div>
+    <div class="box">Clean & Truncate<br><small>512 words max</small></div>
+    <div class="arrow"></div>
+    <div class="box">Generate Embedding<br><small>all-MiniLM-L6-v2<br>384 dimensions</small></div>
+    <div class="arrow"></div>
+    <div class="box">Store in FAISS<br>Vector Index</div>
+    <div class="arrow"></div>
+    <div class="box" style="background:#14532d; border-color:#16a34a; color:#86efac;">✅ Resume Saved!</div>
+  </div>
+
+  <!-- AI ENGINE -->
+  <div class="lane ai">
+    <div class="lane-title">🧠 AI Engine</div>
+
+    <div class="box">SentenceTransformer<br><small>all-MiniLM-L6-v2</small></div>
+    <div class="arrow"></div>
+    <div class="box">Text → Vector<br><small>384-dim float32</small></div>
+    <div class="arrow"></div>
+    <div class="box">FAISS IndexFlatL2<br><small>In-memory store</small></div>
+    <div class="arrow"></div>
+    <div class="box">Cosine Similarity<br><small>Score = 1/(1+dist)</small></div>
+    <div class="arrow"></div>
+    <div class="box">Filter ≥ 40%<br><small>MIN_SCORE = 0.4</small></div>
+    <div class="arrow"></div>
+    <div class="box">Rank by Score<br><small>Best match first</small></div>
+  </div>
+
+  <!-- RECRUITER -->
+  <div class="lane recruiter">
+    <div class="lane-title">🔎 Recruiter</div>
+
+    <div class="box">Enter Job Description<br><small>"React dev, 3yr exp..."</small></div>
+    <div class="arrow"></div>
+    <div class="box">Clean & Preprocess<br><small>Same as resume flow</small></div>
+    <div class="arrow"></div>
+    <div class="box">Generate Query<br>Embedding</div>
+    <div class="arrow"></div>
+    <div class="box">Search FAISS Index<br><small>top_k × 5 candidates</small></div>
+    <div class="arrow"></div>
+    <div class="box">Apply Score Filter<br><small>Remove &lt; 40% matches</small></div>
+    <div class="arrow"></div>
+    <div class="box" style="background:#14532d; border-color:#16a34a; color:#86efac;">✅ Show Ranked Results<br><small>+ Download CSV</small></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="lane admin">
+    <div class="lane-title">📋 Admin</div>
+
+    <div class="box">View All Resumes<br><small>List from session state</small></div>
+    <div class="arrow"></div>
+    <div class="box">Delete One Resume<br><small>Rebuild FAISS index</small></div>
+    <div class="arrow"></div>
+    <div class="box">Clear All<br><small>Reset index + meta</small></div>
+    <div class="arrow"></div>
+    <div class="box" style="background:#14532d; border-color:#16a34a; color:#86efac;">✅ Pool Updated</div>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#2563eb"></div> Candidate Flow</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9333ea"></div> AI Engine</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#16a34a"></div> Recruiter Flow</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div> Admin Flow</div>
+</div>
+
+</body>
+</html>
